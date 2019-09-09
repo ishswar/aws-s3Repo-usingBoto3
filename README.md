@@ -8,7 +8,6 @@
   * [List file](#list-file)
   * [Get file](#get-file)
   * [Delete file](#delete-file)
-  * [![Delete file](demo/deleteFile.gif)](#--delete-file--demo-deletefilegif-)
   * [Unite test](#unite-test)
   * [Tear down](#tear-down)
 
