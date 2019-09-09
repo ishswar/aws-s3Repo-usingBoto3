@@ -71,4 +71,4 @@ scripts we can manage a simple S3 storage repository that stores and manages fil
 
 ## Tear down 
 
-![Clean all via tear down](demo/earDown.gif)
+![Clean all via tear down](demo/tearDown.gif)
