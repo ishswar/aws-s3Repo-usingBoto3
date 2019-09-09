@@ -1,7 +1,7 @@
 
 # Introduction 
 
-Using Python and Boto3 this project demonstrates how with create a set of Python  
+Using Python and Boto3 this project demonstrates how with set of Python  
 scripts we can manage a simple S3 storage repository that stores and manages files on a per-user basis.
 
 ## Main highlights 
@@ -12,21 +12,23 @@ scripts we can manage a simple S3 storage repository that stores and manages fil
 
 ---
 
-- On fist user creation - Repo gets initialized (user bucket/Repo gets created that will stored all user information)
-- Passwords are stored using one-way hash in S3 Repo as metadata of file in user bucket 
+- On fist user creation - User repo (bucket:ucsc-users.hw9) gets initialized (user bucket/Repo that will stored all user information)
+- Passwords are stored using [one-way sah256 hash](https://www.pythoncentral.io/hashing-strings-with-python/) in S3 Repo as metadata of file in users bucket 'ucsc-users.hw9' 
 - During file upload we also show upload progress to see how much file has been uploaded to track long uploads 
-- List file uses Python library print table to print data in tabular format 
+- List file uses Python library [pretty table](http://zetcode.com/python/prettytable/) to print data in tabular format 
 
 ---
 
-- There is unit test file tests3repo.py that does Unit test on each of the major functions for this project 
-- Using file tear_down.py we can cleanup all users and theire files ( admin password is required for this - admin password is stored in s3repomain.py file )
+- There is unit test file tests3repo.py that does Unit test on each of the major functions needed for this project 
+- Using file tear_down.py we can cleanup all users and their files ( admin password is required for this - admin password is stored in s3repomain.py file )
 
 # Schematic 
 
 ![Schematic view](demo/S3-bucket-boto3.png)
 
 # Files 
+
+As this repo has many files lets go over each of them in brief 
 
 | File | Description |
 | ---- | --- |
