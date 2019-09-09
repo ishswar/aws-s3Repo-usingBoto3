@@ -1,3 +1,18 @@
+- [Introduction](#introduction)
+  * [Main highlights](#main-highlights)
+- [Schematic](#schematic)
+- [Files](#files)
+- [Demo](#demo)
+  * [Create a user](#create-a-user)
+  * [Upload file](#upload-file)
+  * [List file](#list-file)
+  * [Get file](#get-file)
+  * [Delete file](#delete-file)
+  * [![Delete file](demo/deleteFile.gif)](#--delete-file--demo-deletefilegif-)
+  * [Unite test](#unite-test)
+  * [Tear down](#tear-down)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 # Introduction 
 
@@ -64,6 +79,8 @@ As this repo has many files lets go over each of them in brief
 ## Create a user 
 
 This demo show how user gets created and how it's information is stored in S3 
+You can see in demo that very first user we create in repo - we also create a repo/S3 "*ucsc-users.hw9*" Bucket  
+to store user information 
 
 ![Create user demo](demo/create_user.gif)
 
