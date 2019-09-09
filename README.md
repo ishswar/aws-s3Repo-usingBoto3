@@ -55,20 +55,40 @@ scripts we can manage a simple S3 storage repository that stores and manages fil
 
 ## Create a user 
 
+This demo show how user gets created and how it's information is stored in S3 
+
 ![Create user demo](demo/create_user.gif)
 
-## Upload user 
+Below image shows - we have one common bucket "" that stores all user information and inside that bucket there is file that stores user information  
+User name is stored in file name itself and password and E-mail is stored as metadata  
+Password is stored as one-way sha256 hash 
+
+![Create user demo](demo/user_information_storage.jpg)
+
+## Upload file 
+
+This demo shows local file getting uploaded to S3 Repo 
 
 ![Upload file](demo/uploadfile.gif)
 
 ## List file 
 
+This demo shows file uploaded before now getting listed as users file  
+It also list the user-key/tag that user provided during upload 
+
 ![List files from Repo](demo/listFiles.gif)
 
+---
+
 ## Unite test 
+
+This demo shows Unit test running all test(s) that makes sure all functions that are needed for this project to run are working as expected 
+All tests are idempotent - they create stuff that is needed for test and then clean it up 
 
 ![Run unit test](demo/unittest.gif)
 
 ## Tear down 
+
+This demo show tear down in action - we use this to cleanup everything when we don't need S3 Repo 
 
 ![Clean all via tear down](demo/tearDown.gif)
