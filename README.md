@@ -59,10 +59,16 @@ scripts we can manage a simple S3 storage repository that stores and manages fil
 
 ## Upload user 
 
+![Upload file](demo/uploadfile.gif)
+
 ## List file 
 
-## Download file 
+![List files from Repo](demo/listFiles.gif)
 
 ## Unite test 
 
+![Run unit test](/demo/unittest.gif)
+
 ## Tear down 
+
+![Clean all via tear down](/demo/earDown.gif)
