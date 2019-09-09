@@ -346,6 +346,7 @@ class s3RepoMain:
                             return True
                         else:
                             self.logger.warning("User's repo is empty")
+                            return False
 
                     except ClientError as e:
                         self.logger.error(e.response)
@@ -359,31 +360,101 @@ class s3RepoMain:
                 self.logger.error(str(ve))
                 return False
 
-    def downloadFile(self, user_name, user_password, file_name):
+    def getFile(self, bucket_name, user_password, user_Key, output_location):
+        """
+        Given user-key / tag find a file in user's repo and download it to given location
+        :param output_location:
+        :param user_Key:
+        :param bucket_name:
+        :param user_password:
+        :return:
+        """
+        try:
+            if self.authenticate_user(bucket_name, user_password):
+                if self.bucket_name_available(bucket_name):
+                    try:
+                        bucket = self.s3.Bucket(bucket_name)
+                        user_Key = str.strip(user_Key)
+                        did_we_foundFile = False
+                        for my_bucket_object in bucket.objects.all():
+                            # For this object/key get tag set by user
+                            s3_client = self.session.client('s3', region_name=self.region)
+                            response = s3_client.get_object_tagging(
+                                Bucket=bucket_name,
+                                Key=my_bucket_object.key
+                            )
+                            tag_set = response["TagSet"]
+                            for tag in tag_set:
+                                if tag["Key"] == "user-key":
+                                    if user_Key == tag["Value"]:
+                                        did_we_foundFile = True
+                                        output_location = str.strip(output_location)
+                                        if not len(output_location) > 0:
+                                            self.logger.warning("User provided empty location for output location - we "
+                                                                "will use default location [" + self.output_folder + "]")
+                                            output_location = "--"
+                                        self.logger.info(
+                                            "Found file [" + my_bucket_object.key + "] for provided user-key [" + user_Key + "]")
+                                        return self.downloadFile(bucket_name, user_password, my_bucket_object.key,
+                                                                 skip_auth=True, output_location=output_location)
+
+                        if not did_we_foundFile:
+                            logging.warning("No file found matching user key [" + user_Key + "]")
+                            return False
+
+                    except ClientError as e:
+                        self.logger.error(e.response)
+                else:
+                    logging.error("Repo [" + bucket_name + "] does not exists")
+                    return False
+            else:
+                logging.error("User authentication failed for user: " + bucket_name)
+                return False
+        except ValueError as ve:
+            if "not found" in str(ve):
+                self.logger.error(str(ve))
+                return False
+
+    def downloadFile(self, user_name, user_password, file_name, output_location="--", skip_auth=False):
         """
         Download file from users Repo ( S3 bucket )
-        It  will download file in fixed location 'outputlocation' defined as constant
+        It  will download file in fixed location 'download_to_this_folder' defined as constant
         If file with same name present it will give you warning - but at same time it will overwrite it
+        :param output_location:
+        :param skip_auth:
         :param user_name:
         :param user_password:
         :param file_name:
         :return:
         """
+        checkUserAuth = True if skip_auth else self.authenticate_user(user_name, user_password)
         try:
-            if self.authenticate_user(user_name, user_password):
+            if checkUserAuth:
                 if not os.path.exists(self.output_folder):
                     os.makedirs(self.output_folder)
-                outputlocation = self.output_folder + file_name
-                if os.path.isfile(outputlocation):
-                    logging.warning(
+
+                if output_location == "--":
+                    # download_to_this_folder = self.output_folder + file_name
+                    download_to_this_folder = os.path.join(self.output_folder, file_name)
+                else:
+                    if os.path.exists(output_location):
+                        download_to_this_folder = os.path.join(output_location,
+                                                               file_name)  # output_location + file_name
+                    else:
+                        self.logger.error("Output folder [" + output_location + "] does not exists create it first ")
+                        return False
+
+                if os.path.isfile(download_to_this_folder):
+                    self.logger.warning(
                         "File [" + file_name + "] already exists in location [" + self.output_folder + "] it will "
                                                                                                        "be "
                                                                                                        "overwritten")
 
                 try:
-                    self.s3.Bucket(user_name).download_file(file_name, outputlocation)
-                    if os.path.isfile(outputlocation):
-                        self.logger.info("File [" + file_name + "] has been downloaded to: [" + outputlocation + "]")
+                    self.s3.Bucket(user_name).download_file(file_name, download_to_this_folder)
+                    if os.path.isfile(download_to_this_folder):
+                        self.logger.info(
+                            "File [" + file_name + "] has been downloaded to: [" + download_to_this_folder + "]")
                     return True
                 except ClientError as e:
                     if '404' in str(e.response):
@@ -391,7 +462,83 @@ class s3RepoMain:
                     else:
                         self.logger.info(e)
             else:
-                logging.error("User authentication failed for user: " + user_name)
+                self.logger.error("User authentication failed for user: " + user_name)
+        except ValueError as ve:
+            if "not found" in str(ve):
+                self.self.logger.error(str(ve))
+                return False
+
+    def deleteFile(self, bucket_name, user_password, user_Key):
+        """
+        Given user-key / tag find a file in user's repo and delete it to given location
+        :param user_Key:
+        :param bucket_name:
+        :param user_password:
+        :return:
+        """
+        try:
+            if self.authenticate_user(bucket_name, user_password):
+                if self.bucket_name_available(bucket_name):
+                    try:
+                        bucket = self.s3.Bucket(bucket_name)
+                        user_Key = str.strip(user_Key)
+                        did_we_foundFile = False
+                        for my_bucket_object in bucket.objects.all():
+                            # For this object/key get tag set by user
+                            s3_client = self.session.client('s3', region_name=self.region)
+                            response = s3_client.get_object_tagging(
+                                Bucket=bucket_name,
+                                Key=my_bucket_object.key
+                            )
+                            tag_set = response["TagSet"]
+                            for tag in tag_set:
+                                if tag["Key"] == "user-key":
+                                    if user_Key == tag["Value"]:
+                                        did_we_foundFile = True
+                                        return self.deleteFileInBucket(bucket_name,user_password,my_bucket_object.key,skip_auth=True)
+
+                        if not did_we_foundFile:
+                            logging.warning("No file found matching user key [" + user_Key + "]")
+                            return False
+
+                    except ClientError as e:
+                        self.logger.error(e.response)
+                else:
+                    logging.error("Repo [" + bucket_name + "] does not exists")
+                    return False
+            else:
+                logging.error("User authentication failed for user: " + bucket_name)
+                return False
+        except ValueError as ve:
+            if "not found" in str(ve):
+                self.logger.error(str(ve))
+                return False
+
+    def deleteFileInBucket(self, user_name, user_password, file_name, skip_auth=False):
+        """
+        Delete object from users repo
+        :param skip_auth:
+        :param user_name:
+        :param user_password:
+        :param file_name:
+        :return:
+        """
+        checkUserAuth = True if skip_auth else self.authenticate_user(user_name, user_password)
+        try:
+            if checkUserAuth:
+                try:
+                    s3_client = self.session.client('s3', region_name=self.region)
+                    s3_client.delete_object(Bucket=user_name, Key=file_name)
+                    self.logger.info(
+                        "File [" + file_name + "] has been deleted")
+                    return True
+                except ClientError as e:
+                    if '404' in str(e.response):
+                        self.logger.info("File [" + file_name + "] does not exists - upload it first")
+                    else:
+                        self.logger.info(e)
+            else:
+                self.logger.error("User authentication failed for user: " + user_name)
         except ValueError as ve:
             if "not found" in str(ve):
                 self.self.logger.error(str(ve))
@@ -434,9 +581,9 @@ class s3RepoMain:
                     except ClientError as e:
                         self.logger.error(e.response)
                 else:
-                    logging.error("Repo [" + self.usersBucket + "] does not exists")
+                    self.logger.error("Repo [" + self.usersBucket + "] does not exists")
             else:
-                logging.error("User authentication failed for user: " + self.admin_username)
+                self.logger.error("User authentication failed for user: " + self.admin_username)
                 return False
         except ValueError as ve:
             if "not found" in str(ve):

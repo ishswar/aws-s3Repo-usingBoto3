@@ -4,7 +4,6 @@ import unittest
 import uuid
 import warnings
 
-
 from s3repo.s3repomain import s3RepoMain
 
 warnings.simplefilter("ignore", ResourceWarning)
@@ -45,7 +44,7 @@ class TestS3RepoOperations(unittest.TestCase):
             import warnings
             warnings.simplefilter("ignore")
 
-        #print("Creating input file with fixed text : [" + self.input_file_text + "]")
+        # print("Creating input file with fixed text : [" + self.input_file_text + "]")
         file = open("testfile.txt", "w")
         file.write(self.input_file_text)
         file.close()
@@ -64,11 +63,18 @@ class TestS3RepoOperations(unittest.TestCase):
             "did not "
             "return True")
         self.assertEqual(self.s3repo.listFiles(self.user_name, self.password), True, "list user did not return True")
-        self.assertEqual(self.s3repo.downloadFile(self.user_name, self.password, self.input_file), True,
-                         "Download file did not "
+        # self.assertEqual(self.s3repo.downloadFile(self.user_name, self.password, self.input_file), True,
+        #                  "Download file did not "
+        #                  "return True")
+        self.assertEqual(self.s3repo.getFile(self.user_name, self.password, self.file_key, output_location=""), True,
+                         "getFile file did not "
                          "return True")
         self.assertEqual(self.checkFile(), True, "checkFile file did not "
                                                  "return True")
+        self.assertEqual(self.s3repo.deleteFile(self.user_name, self.password, self.file_key), True,
+                         "Delete file file did not "
+                         "return True")
+        self.assertEqual(self.s3repo.listFiles(self.user_name, self.password), False, "list user did not return False")
         self.assertEqual(self.s3repo.delete_user(self.user_name), True, "Delete user did not return True")
         self.assertRaises(ValueError, self.s3repo.authenticate_user, self.user_name, self.password)
 
@@ -110,9 +116,9 @@ class TestS3RepoOperations(unittest.TestCase):
                          "did not "
                          "return True")
         self.assertEqual(self.s3repo.authenticate_user(self.user_name, self.password_2), False, "[Invalid password] "
-                                                                                               "authenticate_user did "
-                                                                                               "not "
-                                                                                               "return True")
+                                                                                                "authenticate_user did "
+                                                                                                "not "
+                                                                                                "return True")
         self.assertEqual(self.s3repo.delete_user(self.user_name), True, "Delete user did not return True")
 
     def tearDown(self):

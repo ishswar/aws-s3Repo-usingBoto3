@@ -26,7 +26,3 @@ logger.info(
     "About to list files for user with this info \n\r Username: [" + sys.argv[1] + "] \r\n password: [******]")
 
 s3repo.listFiles(bucket_name=sys.argv[1], user_password=sys.argv[2])
-
-
-
-# print('Argument List:', str(sys.argv))
