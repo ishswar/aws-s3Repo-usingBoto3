@@ -22,6 +22,10 @@ scripts we can manage a simple S3 storage repository that stores and manages fil
 - There is unit test file tests3repo.py that does Unit test on each of the major functions for this project 
 - Using file tear_down.py we can cleanup all users and theire files ( admin password is required for this - admin password is stored in s3repomain.py file )
 
+# Schematic 
+
+![Schematic view](demo/S3-bucket-boto3.png)
+
 # Files 
 
 | File | Description |
