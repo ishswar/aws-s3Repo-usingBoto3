@@ -9,6 +9,8 @@ scripts we can manage a simple S3 storage repository that stores and manages fil
 - Create user : using CreateUser.py user can create a S3 Repo user
 - Upload file : Once user has been created in repo - user can use UploadFile.py to upload file to S3 Repo
 - List file(s): Using ListFiles.py user can list all the files they have uploaded ( if any file present in Repo )
+- Get file: Using GetFile.py we can download the file 
+- Delete file : Using DeleteFile.py we can delete file from user repo 
 
 ---
 
@@ -84,6 +86,19 @@ It also list the user-key/tag that user provided during upload
 
 ![List files from Repo](demo/listFiles.gif)
 
+## Get file 
+
+This demo show how we can download file via providing user-key / tag that  
+we used during upload 
+
+![Download file](demo/getFile.gif)
+
+## Delete file 
+
+This demo show how we can delete file via providing user-key / tag that  
+we used during upload 
+
+![Delete file](demo/deleteFile.gif)
 ---
 
 ## Unite test 
