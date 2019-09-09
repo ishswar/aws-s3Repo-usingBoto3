@@ -55,6 +55,8 @@ scripts we can manage a simple S3 storage repository that stores and manages fil
 
 ## Create a user 
 
+![Create user demo](demo/create_user.gif)
+
 ## Upload user 
 
 ## List file 
