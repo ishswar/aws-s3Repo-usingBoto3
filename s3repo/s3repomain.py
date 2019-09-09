@@ -48,7 +48,7 @@ class s3RepoMain:
 
         # AWS S3 info
         self.region = "us-west-2"
-        self.profile = "SharedAccount"  # "default"
+        self.profile = "default"  # "SharedAccount"
         aws_helper = awsHelper(self.region, self.profile)
         self.session = aws_helper.get_aws_connection()  # boto3 object
         self.s3 = self.session.resource('s3')  # boto3 object
@@ -321,12 +321,25 @@ class s3RepoMain:
                         bucket = self.s3.Bucket(bucket_name)
                         x = PrettyTable()
                         logging.info("Printing content of Repo: " + bucket_name)
-                        x.field_names = ["File", "lastModified", "Size"]
+                        x.field_names = ["File", "User key/Tag", "lastModified", "Size"]
                         bucketContent = bucket.objects.all();
                         bHasFiles = False
                         for my_bucket_object in bucket.objects.all():
                             bHasFiles = True
-                            x.add_row([my_bucket_object.key, my_bucket_object.last_modified, my_bucket_object.size])
+                            # For this object/key get tag set by user
+                            s3_client = self.session.client('s3', region_name=self.region)
+                            response = s3_client.get_object_tagging(
+                                Bucket=bucket_name,
+                                Key=my_bucket_object.key
+                            )
+                            tag_set = response["TagSet"]
+                            user_tag = ""
+                            for tag in tag_set:
+                                if tag["Key"] == "user-key":
+                                    user_tag = tag["Value"]
+
+                            x.add_row(
+                                [my_bucket_object.key, user_tag, my_bucket_object.last_modified, my_bucket_object.size])
 
                         if bHasFiles:
                             print(x)

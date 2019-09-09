@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import re
 import sys
+from getpass import getpass
 
 import s3repo
 from s3repo.s3repomain import *
@@ -23,5 +24,5 @@ logger.info(
     "About to start tear down of Repo")
 
 if yes_or_no("Delete all users and their repos ? "):
-    input_admin_password = input("Enter admin password :")
+    input_admin_password = getpass("Enter admin password: ")
     s3repo.tear_down_all(input_admin_password)
